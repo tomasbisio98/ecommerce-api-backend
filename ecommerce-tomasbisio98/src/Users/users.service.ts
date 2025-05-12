@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class UsersService {
-  getUsers() {
-    return 'Get all Users';
+  getUsers(): string {
+    return 'All Users';
   }
 }
