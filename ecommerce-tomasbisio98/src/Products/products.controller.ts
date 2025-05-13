@@ -7,6 +7,6 @@ export class ProductsController {
 
   @Get()
   getProducts() {
-    return this.productsService.getProducts();
+    return this.productsService.findAll();
   }
 }
