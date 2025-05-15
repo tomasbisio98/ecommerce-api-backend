@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-type Product = {
+export type Product = {
   id: number;
   name: string;
   description: string;
@@ -94,8 +94,42 @@ export class ProductsRepository {
       imgUrl: 'https://example.com/img/parlante.jpg',
     },
   ];
-
-  find() {
+  private currentId = Math.max(...this.products.map((u) => u.id), 0) + 1; // ✅ arranca en el siguiente ID libre
+  getProducts() {
     return this.products;
+  }
+  getProductById(id: number) {
+    return this.products.find((user) => user.id === id);
+  }
+  addProduct(product: Omit<Product, 'id'>) {
+    const id = this.currentId++; // ✅ ID único, sin depender del length
+    const newProduct = { id, ...product };
+    this.products = [...this.products, newProduct];
+
+    return newProduct;
+  }
+
+  updateProduct(id: number, product: Omit<Product, 'id'>) {
+    const oldProduct = this.products.find((product) => product.id === id);
+
+    if (!oldProduct) {
+      return null;
+    }
+
+    const updatedProduct = { ...oldProduct, ...product };
+
+    const index = this.products.findIndex((product) => product.id === id);
+    this.products[index] = updatedProduct;
+
+    return updatedProduct;
+  }
+
+  deleteProduct(id: number) {
+    const index = this.products.findIndex((product) => product.id === id);
+    const product = this.products[index];
+
+    this.products.splice(index, 1);
+
+    return product;
   }
 }
