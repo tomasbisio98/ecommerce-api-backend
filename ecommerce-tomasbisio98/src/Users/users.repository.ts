@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { IUser } from './users.entity';
+import { User } from './users.entity';
 
 @Injectable()
 export class UsersRepository {
-  private users: IUser[] = [
+  private users: User[] = [
     {
       id: 1,
       email: 'user1@example.com',
@@ -54,8 +54,60 @@ export class UsersRepository {
       country: 'China',
       city: 'Beijing',
     },
+    {
+      id: 6,
+      email: 'test6@example.com',
+      name: 'Li sex',
+      password: 'weiSecure789',
+      address: '33 didot par',
+      phone: '0210-1234563428',
+      country: 'Brazil',
+      city: 'Rio',
+    },
   ];
-  find() {
+  private currentId = Math.max(...this.users.map((u) => u.id), 0) + 1; // ✅ arranca en el siguiente ID libre
+  getUsers() {
     return this.users;
+  }
+
+  getUserById(id: number) {
+    return this.users.find((user) => user.id === id);
+  }
+
+  addUser(user: Omit<User, 'id'>) {
+    const id = this.currentId++; // ✅ ID único, sin depender del length
+    const newUser = { id, ...user };
+    this.users = [...this.users, newUser];
+
+    const { password, ...userWithoutPassword } = newUser;
+    return userWithoutPassword;
+  }
+
+  updateUser(id: number, user: User) {
+    const oldUser = this.users.find((user) => user.id === id);
+
+    if (!oldUser) {
+      return null;
+    }
+
+    const updatedUser = { ...oldUser, ...user };
+
+    const index = this.users.findIndex((user) => user.id === id);
+    this.users[index] = updatedUser;
+
+    const { password, ...userWithoutPassword } = updatedUser;
+
+    return userWithoutPassword;
+  }
+
+  deleteUser(id: number) {
+    const index = this.users.findIndex((user) => user.id === id);
+    const user = this.users[index];
+
+    this.users.splice(index, 1);
+
+    const { password, ...userWithoutPassword } = user;
+
+    return userWithoutPassword;
   }
 }
