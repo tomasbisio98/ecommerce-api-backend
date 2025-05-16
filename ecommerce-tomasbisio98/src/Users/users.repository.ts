@@ -79,6 +79,7 @@ export class UsersRepository {
     const newUser = { id, ...user };
     this.users = [...this.users, newUser];
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...userWithoutPassword } = newUser;
     return userWithoutPassword;
   }
@@ -95,6 +96,7 @@ export class UsersRepository {
     const index = this.users.findIndex((user) => user.id === id);
     this.users[index] = updatedUser;
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...userWithoutPassword } = updatedUser;
 
     return userWithoutPassword;
@@ -106,8 +108,22 @@ export class UsersRepository {
 
     this.users.splice(index, 1);
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...userWithoutPassword } = user;
 
     return userWithoutPassword;
+  }
+
+  signin(email: string, password: string) {
+    if (!email || !password) {
+      return 'Faltan credenciales';
+    }
+
+    const user = this.users.find((user) => user.email === email);
+
+    if (!user || user.password !== password) {
+      return 'Email o password incorrectos';
+    }
+    return 'Login exitoso';
   }
 }

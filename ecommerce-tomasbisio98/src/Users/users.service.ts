@@ -12,7 +12,7 @@ export class UsersService {
     const end = start + limit;
 
     users = users.slice(start, end);
-
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     return users.map(({ password, ...user }) => user);
   }
 
