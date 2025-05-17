@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 
 export function loggerGlobal(req: Request, res: Response, next: NextFunction) {
-  const rutasPermitidas = ['/auth', '/users', '/products'];
+  const rutasPermitidas = ['/auth', '/users', '/products', '/categories'];
   const rutaSinQuery = req.originalUrl.split('?')[0];
 
   const esRutaValida = rutasPermitidas.some((ruta) =>
