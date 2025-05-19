@@ -45,8 +45,7 @@ export class Products {
   @Column({
     type: 'text',
     nullable: false,
-    default:
-      'https://cdn.businessinsider.es/sites/navi.axelspringer.es/public/media/image/2022/01/ces-2022-2582123.jpg?tf=1200x',
+    default: 'No image',
   })
   imgUrl: string; //vamos a almacenar URL's con la ubicación remota de la URL
   @ManyToOne(() => Categories, (category) => category.products)

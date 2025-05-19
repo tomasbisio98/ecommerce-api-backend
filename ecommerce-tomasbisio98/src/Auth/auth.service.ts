@@ -1,11 +1,30 @@
-import { Injectable } from '@nestjs/common';
-import { UsersRepository } from 'src/users/users.repository';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { Users } from 'src/users/entities/user.entity';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly usersRepository: UsersRepository) {}
+  constructor(
+    @InjectRepository(Users)
+    private readonly usersRepository: Repository<Users>,
+  ) {}
 
-  signin(email: string, password: string) {
-    return this.usersRepository.signin(email, password);
+  async signin(email: string, password: string): Promise<string> {
+    if (!email || !password) {
+      throw new BadRequestException('Faltan credenciales');
+    }
+
+    const user = await this.usersRepository.findOne({ where: { email } });
+
+    if (!user || user.password !== password) {
+      throw new UnauthorizedException('Email o password incorrectos');
+    }
+
+    return 'Login exitoso';
   }
 }

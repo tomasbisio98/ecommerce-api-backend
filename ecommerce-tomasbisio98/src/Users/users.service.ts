@@ -1,34 +1,81 @@
-import { Injectable } from '@nestjs/common';
-import { UsersRepository } from './users.repository';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import {
+  Injectable,
+  NotFoundException,
+  InternalServerErrorException,
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Users } from './entities/user.entity';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly usersRepository: UsersRepository) {}
+  constructor(
+    @InjectRepository(Users)
+    private readonly userRepository: Repository<Users>,
+  ) {}
 
-  // la lógica de paginado se hace aquí y no en repository porque luego ese archivo va a desaparecer.
-  getUsers(page: number, limit: number) {
-    let users = this.usersRepository.getUsers();
+  async getUsers(page: number, limit: number) {
+    const allUsers = await this.userRepository.find();
+
     const start = (page - 1) * limit;
     const end = start + limit;
 
-    users = users.slice(start, end);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    return users.map(({ password, ...user }) => user);
+    const paginated = allUsers.slice(start, end);
+
+    return paginated.map(({ password, ...user }) => user);
   }
 
-  getUserById(id: number) {
-    return this.usersRepository.getUserById(id);
+  async getUserById(id: string) {
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: ['order'], // Aquí me traigo las órdenes de compra del usuario
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const { password, ...userWithoutPassword } = user;
+    return userWithoutPassword;
   }
 
-  addUser(user: any) {
-    return this.usersRepository.addUser(user);
+  async addUser(userData: Users) {
+    try {
+      const user = this.userRepository.create(userData);
+      const saved = await this.userRepository.save(user);
+
+      const { password, ...userWithoutPassword } = saved;
+      return userWithoutPassword;
+    } catch (error) {
+      throw new InternalServerErrorException('Error creating user');
+    }
   }
 
-  updateUser(id: number, user: any) {
-    return this.usersRepository.updateUser(id, user);
+  async updateUser(id: string, updateData: Users) {
+    const user = await this.userRepository.findOne({ where: { id } });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const updatedUser = Object.assign(user, updateData);
+    const saved = await this.userRepository.save(updatedUser);
+
+    const { password, ...userWithoutPassword } = saved;
+    return userWithoutPassword;
   }
 
-  deleteUser(id: number) {
-    return this.usersRepository.deleteUser(id);
+  async deleteUser(id: string) {
+    const user = await this.userRepository.findOne({ where: { id } });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    await this.userRepository.remove(user);
+
+    const { password, ...userWithoutPassword } = user;
+    return userWithoutPassword;
   }
 }
