@@ -8,6 +8,7 @@ import {
   Query,
   Body,
   UseGuards,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
@@ -28,7 +29,7 @@ export class UsersController {
 
   @Get(':id')
   @UseGuards(AuthGuard)
-  async getUserById(@Param('id') id: string) {
+  async getUserById(@Param('id', new ParseUUIDPipe()) id: string) {
     return this.usersService.getUserById(id);
   }
 
@@ -39,13 +40,16 @@ export class UsersController {
 
   @Put(':id')
   @UseGuards(AuthGuard)
-  async updateUser(@Param('id') id: string, @Body() userDto: UpdateUserDto) {
+  async updateUser(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() userDto: UpdateUserDto,
+  ) {
     return this.usersService.updateUser(id, userDto);
   }
 
   @Delete(':id')
   @UseGuards(AuthGuard)
-  async deleteUser(@Param('id') id: string) {
+  async deleteUser(@Param('id', new ParseUUIDPipe()) id: string) {
     return this.usersService.deleteUser(id);
   }
 }
