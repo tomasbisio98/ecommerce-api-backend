@@ -80,7 +80,7 @@ export class OrdersService {
   }
 
   async getOrder(id: string) {
-    return await this.ordersRepository.findOne({
+    const order = await this.ordersRepository.findOne({
       where: { id },
       relations: {
         orderDetails: {
@@ -88,5 +88,10 @@ export class OrdersService {
         },
       },
     });
+    if (!order) {
+      throw new NotFoundException('Orden no encontrada');
+    }
+
+    return order;
   }
 }

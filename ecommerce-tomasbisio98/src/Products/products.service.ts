@@ -1,4 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  ConflictException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Products } from './entities/product.entity';
 import { Repository } from 'typeorm';
@@ -17,6 +23,12 @@ export class ProductsService {
   async getProducts(page: number, limit: number): Promise<Products[]> {
     const products = await this.productsRepository.find();
 
+    if (products.length === 0) {
+      throw new NotFoundException(
+        'No hay productos cargados en la base de datos',
+      ); // ✅ Error 1: NotFoundException si el seeder no fue ejecutado
+    }
+
     const start = (page - 1) * limit;
     const end = start + limit;
 
@@ -27,43 +39,76 @@ export class ProductsService {
     const product = await this.productsRepository.findOne({ where: { id } });
 
     if (!product) {
-      throw new NotFoundException('Producto no encontrado');
+      throw new NotFoundException('Producto no encontrado'); // ✅ Error 1: NotFoundException
     }
 
     return product;
   }
 
   async create(): Promise<string> {
-    const categories = await this.categoriesRepository.find();
+    try {
+      const categories = await this.categoriesRepository.find();
 
-    const products = data.map((element) => {
-      const category = categories.find((cat) => cat.name === element.category);
+      // ✅ Si no hay categorías cargadas, lanza error
+      if (!categories.length) {
+        throw new BadRequestException(
+          'No hay categorías cargadas. Primero ejecuta /categories/seeder',
+        );
+      }
 
-      const newProduct = new Products();
-      newProduct.name = element.name;
-      newProduct.description = element.description;
-      newProduct.price = element.price;
-      newProduct.stock = element.stock;
-      newProduct.category = category!;
-      // newProduct.imgUrl = element.imgUrl || 'no image';
+      const products = data.map((element) => {
+        const category = categories.find(
+          (cat) => cat.name === element.category,
+        );
 
-      return newProduct;
-    });
+        if (!category) {
+          throw new BadRequestException(
+            `Categoría no válida para el producto: ${element.name}`,
+          );
+        }
 
-    await this.productsRepository
-      .createQueryBuilder()
-      .insert()
-      .into(Products)
-      .values(products)
-      .orIgnore()
-      .execute();
+        const newProduct = new Products();
+        newProduct.name = element.name;
+        newProduct.description = element.description;
+        newProduct.price = element.price;
+        newProduct.stock = element.stock;
+        newProduct.category = category;
+        // newProduct.imgUrl = element.imgUrl || 'no image';
 
-    return 'Products Added';
+        return newProduct;
+      });
+
+      await this.productsRepository
+        .createQueryBuilder()
+        .insert()
+        .into(Products)
+        .values(products)
+        .orIgnore()
+        .execute();
+
+      return 'Products Added';
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'Error al cargar productos. No hay categorías cargadas. Primero ejecuta /categories/seeder. ',
+      );
+    }
   }
 
   async addProduct(productData: Omit<Products, 'id'>): Promise<Products> {
-    const product = this.productsRepository.create(productData);
-    return this.productsRepository.save(product);
+    try {
+      const existing = await this.productsRepository.findOne({
+        where: { name: productData.name },
+      });
+
+      if (existing) {
+        throw new ConflictException('Ya existe un producto con ese nombre'); // ✅ Error 3: ConflictException
+      }
+
+      const product = this.productsRepository.create(productData);
+      return this.productsRepository.save(product);
+    } catch (error) {
+      throw new InternalServerErrorException('Error al crear producto'); // ✅ Error 5: InternalServerErrorException
+    }
   }
 
   async updateProduct(

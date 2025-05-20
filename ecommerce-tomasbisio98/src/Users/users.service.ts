@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   InternalServerErrorException,
+  BadRequestException, // ✅ Agregado para validar duplicación de email
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -16,6 +17,10 @@ export class UsersService {
 
   async getUsers(page: number, limit: number) {
     const allUsers = await this.userRepository.find();
+
+    if (!allUsers.length) {
+      throw new NotFoundException('No hay usuarios registrados');
+    }
 
     const start = (page - 1) * limit;
     const end = start + limit;
@@ -38,10 +43,22 @@ export class UsersService {
 
   async addUser(userData: Partial<Users>) {
     try {
+      const existingUser = await this.userRepository.findOne({
+        where: { email: userData.email },
+      });
+
+      if (existingUser) {
+        throw new BadRequestException('Ya existe un usuario con ese correo.');
+      }
+
       const user = this.userRepository.create(userData);
       const saved = await this.userRepository.save(user);
       return saved;
     } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error; // ✅ No lo atrapo, lo relanzo tal cual
+      }
+
       throw new InternalServerErrorException('Error creating user');
     }
   }
