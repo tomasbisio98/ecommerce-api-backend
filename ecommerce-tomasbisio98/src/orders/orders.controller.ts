@@ -8,7 +8,8 @@ export class OrdersController {
 
   @Post()
   addOrder(@Body() createOrderDto: CreateOrderDto) {
-    const { userId, productIds } = createOrderDto;
+    const { userId, products } = createOrderDto;
+    const productIds = products.map((p) => p.id);
     return this.ordersService.addOrder(userId, productIds);
   }
 

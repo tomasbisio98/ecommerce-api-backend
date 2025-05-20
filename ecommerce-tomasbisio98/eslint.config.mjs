@@ -2,6 +2,7 @@
 import eslint from '@eslint/js';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 import globals from 'globals';
+import { off } from 'process';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
@@ -32,6 +33,7 @@ export default tseslint.config(
       '@typescript-eslint/explicit-module-boundary-types': 'off',
       '@typescript-eslint/unbound-method': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
       'prettier/prettier': [
         'error',
         {
