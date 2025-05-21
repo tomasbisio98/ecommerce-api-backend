@@ -18,10 +18,10 @@ export class CategoriesService {
   async addCategories(): Promise<string> {
     try {
       const categoriesNames = new Set(data.map((element) => element.category));
-      const categoriesArray = Array.from(categoriesNames); // ['smartphone', 'PC']
+      const categoriesArray = Array.from(categoriesNames);
       const categories = categoriesArray.map((category) => ({
         name: category,
-      })); // [{name: 'smartphone'}, {name: 'PC'}]
+      }));
 
       await this.categoriesRepository
         .createQueryBuilder()
@@ -32,8 +32,7 @@ export class CategoriesService {
         .execute();
 
       return 'Categories Added';
-    } catch (error) {
-      // ✅ Error 1: si falla la inserción
+    } catch {
       throw new InternalServerErrorException('Error al cargar las categorías');
     }
   }
@@ -41,7 +40,6 @@ export class CategoriesService {
   async getCategories() {
     const categories = await this.categoriesRepository.find();
 
-    // ✅ Error 2: si no hay categorías en la base
     if (!categories.length) {
       throw new NotFoundException('No hay categorías disponibles');
     }

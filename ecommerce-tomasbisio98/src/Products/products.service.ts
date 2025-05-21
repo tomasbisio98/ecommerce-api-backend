@@ -26,7 +26,7 @@ export class ProductsService {
     if (products.length === 0) {
       throw new NotFoundException(
         'No hay productos cargados en la base de datos',
-      ); // ✅ Error 1: NotFoundException si el seeder no fue ejecutado
+      );
     }
 
     const start = (page - 1) * limit;
@@ -39,7 +39,7 @@ export class ProductsService {
     const product = await this.productsRepository.findOne({ where: { id } });
 
     if (!product) {
-      throw new NotFoundException('Producto no encontrado'); // ✅ Error 1: NotFoundException
+      throw new NotFoundException('Producto no encontrado');
     }
 
     return product;
@@ -49,7 +49,6 @@ export class ProductsService {
     try {
       const categories = await this.categoriesRepository.find();
 
-      // ✅ Si no hay categorías cargadas, lanza error
       if (!categories.length) {
         throw new BadRequestException(
           'No hay categorías cargadas. Primero ejecuta /categories/seeder',
@@ -72,8 +71,8 @@ export class ProductsService {
         newProduct.description = element.description;
         newProduct.price = element.price;
         newProduct.stock = element.stock;
-        newProduct.category = category;
-        // newProduct.imgUrl = element.imgUrl || 'no image';
+        newProduct.category = category!;
+        newProduct.imgUrl = element?.imgUrl;
 
         return newProduct;
       });
@@ -87,7 +86,7 @@ export class ProductsService {
         .execute();
 
       return 'Products Added';
-    } catch (error) {
+    } catch {
       throw new InternalServerErrorException(
         'Error al cargar productos. No hay categorías cargadas. Primero ejecuta /categories/seeder. ',
       );
@@ -101,13 +100,13 @@ export class ProductsService {
       });
 
       if (existing) {
-        throw new ConflictException('Ya existe un producto con ese nombre'); // ✅ Error 3: ConflictException
+        throw new ConflictException('Ya existe un producto con ese nombre');
       }
 
       const product = this.productsRepository.create(productData);
       return this.productsRepository.save(product);
-    } catch (error) {
-      throw new InternalServerErrorException('Error al crear producto'); // ✅ Error 5: InternalServerErrorException
+    } catch {
+      throw new InternalServerErrorException('Error al crear producto');
     }
   }
 

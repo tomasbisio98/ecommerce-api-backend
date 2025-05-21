@@ -8,12 +8,12 @@ export class AuthGuard implements CanActivate {
   ): boolean | Promise<boolean> | Observable<boolean> {
     const request = context.switchToHttp().getRequest();
 
-    const authHeader = request.headers.authorization; //Basic: email:password
+    const authHeader = request.headers.authorization;
 
     if (!authHeader) {
       return false;
     }
-    const auth = authHeader.split(' ')[1]; // [Basic, email: password]. Me quedo con el segundo elemento
+    const auth = authHeader.split(' ')[1];
     if (!auth) {
       return false;
     }

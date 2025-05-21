@@ -47,10 +47,10 @@ export class Products {
     nullable: false,
     default: 'No image',
   })
-  imgUrl: string; //vamos a almacenar URL's con la ubicación remota de la URL
+  imgUrl?: string;
   @ManyToOne(() => Categories, (category) => category.products)
   @JoinColumn({ name: 'category_id' })
-  category: Categories; // aquí debemos guardar un objeto completo (estructura completa de la categoría)
+  category: Categories;
 
   @ManyToMany(() => OrderDetails, (orderDetails) => orderDetails.products)
   orderDetails: OrderDetails[];

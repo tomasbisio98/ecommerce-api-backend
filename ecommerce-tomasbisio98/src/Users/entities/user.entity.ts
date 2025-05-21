@@ -55,7 +55,7 @@ export class Users {
     type: 'boolean',
     default: false,
   })
-  isAdmin: boolean; // significa que el usuario a registrarse es invitado.
+  isAdmin: boolean;
 
   @OneToMany(() => Orders, (order) => order.user)
   order: Orders[];

@@ -32,5 +32,5 @@ export class OrderDetails {
 
   @OneToOne(() => Orders, (order) => order.orderDetails)
   @JoinColumn({ name: 'order_id' })
-  order: Orders; //tengo estructura completa con los datos de la Orden
+  order: Orders;
 }

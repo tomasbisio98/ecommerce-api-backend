@@ -7,6 +7,7 @@ export function loggerGlobal(req: Request, res: Response, next: NextFunction) {
     '/products',
     '/categories',
     '/orders',
+    '/files',
   ];
   const rutaSinQuery = req.originalUrl.split('?')[0];
 
@@ -26,17 +27,3 @@ export function loggerGlobal(req: Request, res: Response, next: NextFunction) {
     res.status(404).send('Ruta no encontrada');
   }
 }
-
-//Resolución con clases//
-
-// @Injectable()
-// export class LoggerMiddleware implements NestMiddleware {
-//   use(req: Request, res: Response, next: NextFunction) {
-//     //logica del intermediario
-//     const getDate = () => new Date().toISOString();
-
-//     console.log(`${req.method} ${req.url} - Request time: ${getDate()}`);
-
-//     next();
-//   }
-// }

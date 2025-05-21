@@ -2,7 +2,7 @@ import {
   Injectable,
   NotFoundException,
   InternalServerErrorException,
-  BadRequestException, // ✅ Agregado para validar duplicación de email
+  BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -56,7 +56,7 @@ export class UsersService {
       return saved;
     } catch (error) {
       if (error instanceof BadRequestException) {
-        throw error; // ✅ No lo atrapo, lo relanzo tal cual
+        throw error;
       }
 
       throw new InternalServerErrorException('Error creating user');
