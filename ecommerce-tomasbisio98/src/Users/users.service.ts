@@ -41,27 +41,27 @@ export class UsersService {
     return user;
   }
 
-  async addUser(userData: Partial<Users>) {
-    try {
-      const existingUser = await this.userRepository.findOne({
-        where: { email: userData.email },
-      });
+  // async addUser(userData: Partial<Users>) {
+  //   try {
+  //     const existingUser = await this.userRepository.findOne({
+  //       where: { email: userData.email },
+  //     });
 
-      if (existingUser) {
-        throw new BadRequestException('Ya existe un usuario con ese correo.');
-      }
+  //     if (existingUser) {
+  //       throw new BadRequestException('Unable to process the request');
+  //     }
 
-      const user = this.userRepository.create(userData);
-      const saved = await this.userRepository.save(user);
-      return saved;
-    } catch (error) {
-      if (error instanceof BadRequestException) {
-        throw error;
-      }
+  //     const user = this.userRepository.create(userData);
+  //     const userSaved = await this.userRepository.save(user);
+  //     return userSaved;
+  //   } catch (error) {
+  //     if (error instanceof BadRequestException) {
+  //       throw error;
+  //     }
 
-      throw new InternalServerErrorException('Error creating user');
-    }
-  }
+  //     throw new InternalServerErrorException('Unable to process the request');
+  //   }
+  // }
 
   async updateUser(id: string, updateData: Partial<Users>) {
     const user = await this.userRepository.findOne({ where: { id } });

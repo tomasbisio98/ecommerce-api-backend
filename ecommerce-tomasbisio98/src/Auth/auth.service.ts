@@ -1,34 +1,68 @@
-import {
-  BadRequestException,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { Users } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CreateUserDto } from 'src/users/dtos/createUser.dto';
+import * as bcrypt from 'bcrypt';
 import { LoginDto } from 'src/users/dtos/login.dto';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(Users)
     private readonly usersRepository: Repository<Users>,
+    private readonly jwtService: JwtService,
   ) {}
 
-  async signin({ email, password }: LoginDto): Promise<string> {
-    if (!email || !password) {
-      throw new BadRequestException('Faltan credenciales');
+  async signUp(user: CreateUserDto) {
+    const existingUser = await this.usersRepository.findOneBy({
+      email: user.email,
+    });
+
+    if (existingUser) {
+      throw new BadRequestException('Unable to process the request');
     }
 
-    const user = await this.usersRepository.findOne({
-      where: { email },
+    const hashedPassword = await bcrypt.hash(user.password, 10);
+
+    const newUser = await this.usersRepository.save({
+      ...user,
+      password: hashedPassword,
+    });
+
+    const { password, ...cleanUser } = newUser;
+    return cleanUser;
+  }
+
+  async signIn(credentials: LoginDto) {
+    const existingUser = await this.usersRepository.findOne({
+      where: { email: credentials.email },
       select: ['id', 'email', 'password'],
     });
 
-    if (!user || user.password !== password) {
-      throw new UnauthorizedException('Email o password incorrectos');
+    if (!existingUser) {
+      throw new BadRequestException('Invalid credentials');
     }
 
-    return 'Login exitoso';
+    const matchedPassword = await bcrypt.compare(
+      credentials.password,
+      existingUser.password,
+    );
+
+    if (!matchedPassword) {
+      throw new BadRequestException('Invalid credentials');
+    }
+
+    const payload = {
+      id: existingUser.id,
+      email: existingUser.email,
+      isAdmin: existingUser.isAdmin,
+    };
+
+    const token = this.jwtService.sign({ payload });
+
+    return token;
   }
 }
