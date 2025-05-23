@@ -24,9 +24,7 @@ export class ProductsService {
     const products = await this.productsRepository.find();
 
     if (products.length === 0) {
-      throw new NotFoundException(
-        'No hay productos cargados en la base de datos',
-      );
+      throw new NotFoundException('No products at Database');
     }
 
     const start = (page - 1) * limit;
@@ -39,7 +37,7 @@ export class ProductsService {
     const product = await this.productsRepository.findOne({ where: { id } });
 
     if (!product) {
-      throw new NotFoundException('Producto no encontrado');
+      throw new NotFoundException('Product not found');
     }
 
     return product;
@@ -62,7 +60,7 @@ export class ProductsService {
 
         if (!category) {
           throw new BadRequestException(
-            `Categoría no válida para el producto: ${element.name}`,
+            `Invalid category for product: ${element.name}`,
           );
         }
 
@@ -88,7 +86,7 @@ export class ProductsService {
       return 'Products Added';
     } catch {
       throw new InternalServerErrorException(
-        'Error al cargar productos. No hay categorías cargadas. Primero ejecuta /categories/seeder. ',
+        'Error while loading products . No existing categories  First execute /categories/seeder. ',
       );
     }
   }
@@ -100,13 +98,15 @@ export class ProductsService {
       });
 
       if (existing) {
-        throw new ConflictException('Ya existe un producto con ese nombre');
+        throw new ConflictException(
+          `Invalid: there is another product with this name`,
+        );
       }
 
       const product = this.productsRepository.create(productData);
       return this.productsRepository.save(product);
     } catch {
-      throw new InternalServerErrorException('Error al crear producto');
+      throw new InternalServerErrorException('Error creating product');
     }
   }
 

@@ -33,7 +33,7 @@ export class CategoriesService {
 
       return 'Categories Added';
     } catch {
-      throw new InternalServerErrorException('Error al cargar las categorías');
+      throw new InternalServerErrorException('Error while loading categories');
     }
   }
 
@@ -41,7 +41,7 @@ export class CategoriesService {
     const categories = await this.categoriesRepository.find();
 
     if (!categories.length) {
-      throw new NotFoundException('No hay categorías disponibles');
+      throw new NotFoundException('No available categories');
     }
 
     return categories;

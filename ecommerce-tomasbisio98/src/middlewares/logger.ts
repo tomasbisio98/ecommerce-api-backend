@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 
 export function loggerGlobal(req: Request, res: Response, next: NextFunction) {
-  const rutasPermitidas = [
+  const allowedRoutes = [
     '/auth',
     '/users',
     '/products',
@@ -9,21 +9,21 @@ export function loggerGlobal(req: Request, res: Response, next: NextFunction) {
     '/orders',
     '/files',
   ];
-  const rutaSinQuery = req.originalUrl.split('?')[0];
+  const routeWithoutQuery = req.originalUrl.split('?')[0];
 
-  const esRutaValida = rutasPermitidas.some((ruta) =>
-    rutaSinQuery.startsWith(ruta),
+  const isValidRoute = allowedRoutes.some((route) =>
+    routeWithoutQuery.startsWith(route),
   );
 
   const timestamp = new Date().toLocaleString();
 
-  if (esRutaValida) {
+  if (isValidRoute) {
     if (req.method === 'GET') {
       console.log(`[${timestamp}] GET ${req.originalUrl}`);
     }
     next();
   } else {
-    console.error(`❌ Ruta no válida: ${req.originalUrl}`);
-    res.status(404).send('Ruta no encontrada');
+    console.error(`❌ Invalid route: ${req.originalUrl}`);
+    res.status(404).send('Route not found');
   }
 }

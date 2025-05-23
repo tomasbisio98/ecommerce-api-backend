@@ -89,7 +89,7 @@ export class OrdersService {
       },
     });
     if (!order) {
-      throw new NotFoundException('Orden no encontrada');
+      throw new NotFoundException('Order not found');
     }
 
     return order;

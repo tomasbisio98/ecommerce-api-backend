@@ -15,7 +15,7 @@ export class UsersService {
     const allUsers = await this.userRepository.find();
 
     if (!allUsers.length) {
-      throw new NotFoundException('No hay usuarios registrados');
+      throw new NotFoundException('No users registered');
     }
 
     const start = (page - 1) * limit;
