@@ -32,14 +32,14 @@ export class AuthService {
       password: hashedPassword,
     });
 
-    const { password, ...cleanUser } = newUser;
+    const { isAdmin, password, ...cleanUser } = newUser;
     return cleanUser;
   }
 
   async signIn(credentials: LoginDto) {
     const existingUser = await this.usersRepository.findOne({
       where: { email: credentials.email },
-      select: ['id', 'email', 'password'],
+      select: ['id', 'email', 'password', 'isAdmin'],
     });
 
     if (!existingUser) {
@@ -61,7 +61,7 @@ export class AuthService {
       isAdmin: existingUser.isAdmin,
     };
 
-    const token = this.jwtService.sign({ payload });
+    const token = this.jwtService.sign(payload);
 
     return token;
   }

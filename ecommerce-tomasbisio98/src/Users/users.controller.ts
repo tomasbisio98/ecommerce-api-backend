@@ -12,13 +12,17 @@ import {
 import { UsersService } from './users.service';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { UpdateUserDto } from './dtos/updateUser.dto';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Role } from 'src/roles.enum';
+import { Roles } from 'src/decorators/role.decorator';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  @UseGuards(AuthGuard)
+  @Roles(Role.Admin)
+  @UseGuards(AuthGuard, RolesGuard)
   async getUsers(@Query('page') page?: number, @Query('limit') limit?: number) {
     const pageNum = Number(page) || 1;
     const limitNum = Number(limit) || 5;

@@ -1,9 +1,5 @@
-import {
-  Injectable,
-  NotFoundException,
-  InternalServerErrorException,
-  BadRequestException,
-} from '@nestjs/common';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Users } from './entities/user.entity';
@@ -37,8 +33,8 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-
-    return user;
+    const { isAdmin, password, ...userWithoutSensitiveData } = user;
+    return userWithoutSensitiveData;
   }
 
   // async addUser(userData: Partial<Users>) {
@@ -71,7 +67,10 @@ export class UsersService {
     }
 
     const updatedUser = Object.assign(user, updateData);
-    return this.userRepository.save(updatedUser);
+    const savedUser = await this.userRepository.save(updatedUser);
+
+    const { isAdmin, password, ...userWithoutSensitiveData } = savedUser;
+    return userWithoutSensitiveData;
   }
 
   async deleteUser(id: string) {
@@ -82,6 +81,7 @@ export class UsersService {
     }
 
     await this.userRepository.remove(user);
-    return user;
+    const { isAdmin, password, ...userWithoutSensitiveData } = user;
+    return userWithoutSensitiveData;
   }
 }

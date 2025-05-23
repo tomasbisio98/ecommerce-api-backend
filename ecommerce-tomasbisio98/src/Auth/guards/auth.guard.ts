@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import {
   CanActivate,
@@ -7,8 +6,8 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { log } from 'console';
 import { Observable } from 'rxjs';
+import { Role } from 'src/roles.enum';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -33,12 +32,19 @@ export class AuthGuard implements CanActivate {
       const secret = process.env.JWT_SECRET;
       const payload = this.jwtService.verify(token, { secret });
 
-      payload.exp = new Date(payload.exp * 1000);
-      payload.iat = new Date(payload.iat * 1000);
+      const roles = payload.roles ?? [payload.isAdmin ? Role.Admin : Role.User];
 
-      request.user = payload;
+      request.user = {
+        id: payload.id,
+        email: payload.email,
+        roles,
+        iat: new Date(payload.iat * 1000),
+        exp: new Date(payload.exp * 1000),
+      };
+
       return true;
     } catch (error) {
+      console.log(error);
       throw new UnauthorizedException('Invalid token');
     }
   }
