@@ -5,7 +5,6 @@ import {
   Get,
   Param,
   ParseUUIDPipe,
-  Post,
   Put,
   Query,
   UseGuards,
@@ -16,6 +15,7 @@ import { Products } from './entities/product.entity';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/decorators/role.decorator';
 import { Role } from 'src/roles.enum';
+import { ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 
 @Controller('products')
 export class ProductsController {
@@ -27,6 +27,20 @@ export class ProductsController {
   }
 
   @Get()
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    example: 1,
+    description: 'Número de página (default: 1)',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: Number,
+    example: 5,
+    description: 'Cantidad de productos por página (default: 5)',
+  })
   getProducts(@Query('page') page?: number, @Query('limit') limit?: number) {
     const pageNum = Number(page) || 1;
     const limitNum = Number(limit) || 5;
@@ -38,11 +52,7 @@ export class ProductsController {
     return this.productsService.getProductById(id);
   }
 
-  @Post()
-  addProduct(@Body() product: Omit<Products, 'id'>) {
-    return this.productsService.addProduct(product);
-  }
-
+  @ApiBearerAuth()
   @Put(':id')
   @Roles(Role.Admin)
   @UseGuards(AuthGuard, RolesGuard)

@@ -18,6 +18,6 @@
     "strictBindCallApply": false,
     "resolveJsonModule": true,
     "noFallthroughCasesInSwitch": false,
-    "types": ["multer"]
+    "types": ["multer", "jest"]
   }
 }

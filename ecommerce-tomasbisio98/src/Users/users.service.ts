@@ -37,28 +37,6 @@ export class UsersService {
     return userWithoutSensitiveData;
   }
 
-  // async addUser(userData: Partial<Users>) {
-  //   try {
-  //     const existingUser = await this.userRepository.findOne({
-  //       where: { email: userData.email },
-  //     });
-
-  //     if (existingUser) {
-  //       throw new BadRequestException('Unable to process the request');
-  //     }
-
-  //     const user = this.userRepository.create(userData);
-  //     const userSaved = await this.userRepository.save(user);
-  //     return userSaved;
-  //   } catch (error) {
-  //     if (error instanceof BadRequestException) {
-  //       throw error;
-  //     }
-
-  //     throw new InternalServerErrorException('Unable to process the request');
-  //   }
-  // }
-
   async updateUser(id: string, updateData: Partial<Users>) {
     const user = await this.userRepository.findOne({ where: { id } });
 

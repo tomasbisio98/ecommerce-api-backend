@@ -2,7 +2,6 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
-  ConflictException,
   InternalServerErrorException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -49,7 +48,7 @@ export class ProductsService {
 
       if (!categories.length) {
         throw new BadRequestException(
-          'No hay categorías cargadas. Primero ejecuta /categories/seeder',
+          'No categories to show. First execute /categories/seeder',
         );
       }
 
@@ -88,25 +87,6 @@ export class ProductsService {
       throw new InternalServerErrorException(
         'Error while loading products . No existing categories  First execute /categories/seeder. ',
       );
-    }
-  }
-
-  async addProduct(productData: Omit<Products, 'id'>): Promise<Products> {
-    try {
-      const existing = await this.productsRepository.findOne({
-        where: { name: productData.name },
-      });
-
-      if (existing) {
-        throw new ConflictException(
-          `Invalid: there is another product with this name`,
-        );
-      }
-
-      const product = this.productsRepository.create(productData);
-      return this.productsRepository.save(product);
-    } catch {
-      throw new InternalServerErrorException('Error creating product');
     }
   }
 
