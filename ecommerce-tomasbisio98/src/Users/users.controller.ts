@@ -10,11 +10,11 @@ import {
   ParseUUIDPipe,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { AuthGuard } from 'src/common/guards/auth.guard';
 import { UpdateUserDto } from './dtos/updateUser.dto';
-import { RolesGuard } from 'src/auth/guards/roles.guard';
-import { Role } from 'src/roles.enum';
-import { Roles } from 'src/decorators/role.decorator';
+import { RolesGuard } from 'src/common/guards/roles.guard';
+import { Role } from 'src/common/roles.enum';
+import { Roles } from 'src/common/decorators/role.decorator';
 import { ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 
 @Controller('users')

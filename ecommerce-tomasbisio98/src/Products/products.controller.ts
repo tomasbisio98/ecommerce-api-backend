@@ -10,11 +10,11 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
-import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { AuthGuard } from 'src/common/guards/auth.guard';
 import { Products } from './entities/product.entity';
-import { RolesGuard } from 'src/auth/guards/roles.guard';
-import { Roles } from 'src/decorators/role.decorator';
-import { Role } from 'src/roles.enum';
+import { RolesGuard } from 'src/common/guards/roles.guard';
+import { Roles } from 'src/common/decorators/role.decorator';
+import { Role } from 'src/common/roles.enum';
 import { ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 
 @Controller('products')
