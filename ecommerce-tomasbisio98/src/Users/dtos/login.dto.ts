@@ -3,7 +3,7 @@ import { IsEmail, IsNotEmpty, MinLength, MaxLength } from 'class-validator';
 export class LoginDto {
   /**
    * Correo electrónico único del usuario.
-   * @example juan@gmail.com
+   * @example maximiliano@gmail.com
    */
   @IsNotEmpty()
   @IsEmail()

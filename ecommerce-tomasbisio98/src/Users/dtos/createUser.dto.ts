@@ -21,7 +21,7 @@ export class CreateUserDto {
 
   /**
    * Correo electrónico único del usuario.
-   * @example juan@gmail.com
+   * @example maximiliano@gmail.com
    */
   @IsNotEmpty()
   @IsEmail()

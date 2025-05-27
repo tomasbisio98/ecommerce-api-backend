@@ -9,7 +9,7 @@ import {
 export class UpdateUserDto {
   /**
    * Nombre del usuario.
-   * @example Maximiliano
+   * @example Juan
    */
   @IsNotEmpty()
   @IsString()
