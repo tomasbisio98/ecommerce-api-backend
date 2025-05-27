@@ -11,11 +11,11 @@ import {
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { AuthGuard } from 'src/common/guards/auth.guard';
-import { Products } from './entities/product.entity';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 import { Roles } from 'src/common/decorators/role.decorator';
 import { Role } from 'src/common/roles.enum';
 import { ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
+import { UpdateProductDto } from './dto/update-product-dto';
 
 @Controller('products')
 export class ProductsController {
@@ -58,9 +58,9 @@ export class ProductsController {
   @UseGuards(AuthGuard, RolesGuard)
   updateProduct(
     @Param('id', new ParseUUIDPipe()) id: string,
-    @Body() product: Partial<Products>,
+    @Body() productDto: UpdateProductDto,
   ) {
-    return this.productsService.updateProduct(id, product);
+    return this.productsService.updateProduct(id, productDto);
   }
 
   @Delete(':id')

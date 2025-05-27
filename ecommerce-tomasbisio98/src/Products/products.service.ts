@@ -9,6 +9,7 @@ import { Products } from './entities/product.entity';
 import { Repository } from 'typeorm';
 import { Categories } from 'src/categories/entities/category.entity';
 import * as data from '../data/data.json';
+import { UpdateProductDto } from './dto/update-product-dto';
 
 @Injectable()
 export class ProductsService {
@@ -92,9 +93,17 @@ export class ProductsService {
 
   async updateProduct(
     id: string,
-    updateData: Partial<Products>,
+    updateData: UpdateProductDto,
   ): Promise<Products> {
     const product = await this.getProductById(id);
+
+    if (updateData.categoryId) {
+      const category = await this.categoriesRepository.findOneBy({
+        id: updateData.categoryId,
+      });
+      if (!category) throw new NotFoundException('Category not found');
+      product.category = category;
+    }
 
     const updated = this.productsRepository.merge(product, updateData);
     return this.productsRepository.save(updated);
