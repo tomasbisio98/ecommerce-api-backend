@@ -15,6 +15,12 @@ API RESTful para la gestión de un e-commerce. Permite la creación, actualizaci
 
 ---
 
+## 🐳 Soporte para Docker
+
+### ✅ Requisitos
+
+- Tener [Docker](https://www.docker.com/) y [Docker Compose](https://docs.docker.com/compose/) instalados.
+
 ## 🧱 Estructura del proyecto
 
 📦 ecommerce-tomasbisio98
