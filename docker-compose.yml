@@ -1,0 +1,29 @@
+services:
+  backend:
+    build: .
+    container_name: ecommerce-backend
+    ports:
+      - '3001:3000'
+    depends_on:
+      - postgres
+    env_file:
+      - .env.development
+    volumes:
+      - .:/app
+    command: npm run start:prod
+
+  postgres:
+    image: postgres:15
+    container_name: ecommerce-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: PTalleres98!4
+      POSTGRES_DB: ecommerce
+    ports:
+      - '5433:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:

@@ -1,3 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+import * as crypto from 'crypto';
+
+if (!globalThis.crypto) {
+  (globalThis as any).crypto = crypto;
+}
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { loggerGlobal } from './common/middlewares/logger';
