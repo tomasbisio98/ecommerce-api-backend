@@ -12,6 +12,7 @@ API RESTful para la gestión de un e-commerce. Permite la creación, actualizaci
 - **JWT** (Json Web Tokens)  
 - **Swagger (OpenAPI)**  
 - **Cloudinary** (para la gestión de imágenes)
+- **Docker**
 
 ---
 
